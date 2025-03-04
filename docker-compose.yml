@@ -11,6 +11,15 @@ services:
       - db-data:/var/lib/postgresql/data
     ports:
       - ${DATABASE_PORT}:5432
+  test_db:
+    image: postgres:16.3
+    restart: always
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - ${DATABASE_PORT_TEST}:5432
 
 volumes:
   db-data:

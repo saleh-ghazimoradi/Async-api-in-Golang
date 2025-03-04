@@ -1,55 +1,24 @@
 package config
 
 import (
-	"github.com/caarlos0/env"
-	"github.com/joho/godotenv"
-	"log"
-	"time"
+	"fmt"
+	"github.com/caarlos0/env/v11"
 )
 
-var AppConfig *Config
-
 type Config struct {
-	ServerConfig ServerConfig
-	DBConfig     DBConfig
+	DatabaseName     string `env:"DATABASE_NAME"`
+	DatabaseHost     string `env:"DATABASE_HOST"`
+	DatabasePort     string `env:"DATABASE_PORT"`
+	DatabaseUser     string `env:"DATABASE_USER"`
+	DatabasePassword string `env:"DATABASE_PASSWORD"`
 }
 
-type DBConfig struct {
-	DBDriver     string        `env:"DB_DRIVER,required"`
-	DBSource     string        `env:"DB_SOURCE,required"`
-	DbHost       string        `env:"DB_HOST,required"`
-	DbPort       string        `env:"DB_PORT,required"`
-	DbUser       string        `env:"DB_USER,required"`
-	DbPassword   string        `env:"DB_PASSWORD,required"`
-	DbName       string        `env:"DB_NAME,required"`
-	DbSslMode    string        `env:"DB_SSLMODE,required"`
-	MaxOpenConns int           `env:"DB_MAX_OPEN_CONNECTIONS,required"`
-	MaxIdleConns int           `env:"DB_MAX_IDLE_CONNECTIONS,required"`
-	MaxIdleTime  time.Duration `env:"DB_MAX_IDLE_TIME,required"`
-	Timeout      time.Duration `env:"DB_TIMEOUT,required"`
-}
-
-type ServerConfig struct {
-	Port    string `env:"SERVER_PORT,required"`
-	Version string `env:"SERVER_VERSION,required"`
-}
-
-func LoadConfig() error {
-	if err := godotenv.Load("app.env"); err != nil {
-		log.Fatal("Error loading app.env file")
+func NewConfig() (*Config, error) {
+	var cfg Config
+	cfg, err := env.ParseAs[Config]()
+	if err != nil {
+		return nil, fmt.Errorf("failed to load config: %w", err)
 	}
 
-	config := &Config{}
-	if err := env.Parse(config); err != nil {
-		log.Fatal("Error parsing config")
-	}
-
-	serverConfig := &ServerConfig{}
-	if err := env.Parse(serverConfig); err != nil {
-		log.Fatal("Error parsing config")
-	}
-
-	AppConfig = config
-
-	return nil
+	return &cfg, nil
 }

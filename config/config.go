@@ -13,6 +13,10 @@ type Config struct {
 	DatabasePassword string `env:"DATABASE_PASSWORD"`
 }
 
+func (c *Config) DatabaseURL() string {
+	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable", c.DatabaseUser, c.DatabasePassword, c.DatabaseHost, c.DatabasePort, c.DatabaseName)
+}
+
 func NewConfig() (*Config, error) {
 	var cfg Config
 	cfg, err := env.ParseAs[Config]()
